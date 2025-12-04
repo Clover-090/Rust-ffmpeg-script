@@ -13,7 +13,7 @@ fn newlineremover(x: &mut String) {
 
 fn main() {
     //Declairing variables for future use
-    let mut searchdir = String::new();
+    let mut search_dir = String::new();
     let mut extention1 = String::new();
     let program = "ffmpeg";
     let mut extention2 = String::new();
@@ -25,7 +25,7 @@ fn main() {
         println!("Enter the directory you want to search\n");
 
         //Read user input
-        io::stdin().read_line(&mut searchdir).expect("Failed to read line");
+        io::stdin().read_line(&mut search_dir).expect("Failed to read line");
 
         println!("Enter the file extention to search for\n");
 
@@ -36,24 +36,28 @@ fn main() {
         io::stdin().read_line(&mut extention2).expect("Failed to read line");
 
         //Remove newline from the end
-        newlineremover(&mut searchdir);
+        newlineremover(&mut search_dir);
         newlineremover(&mut extention1);
         newlineremover(&mut extention2);
         
         //Currently prints the path of all the files that are under the given directory and all its sub directories, skips files that it doesn not have perms for
-        for file in WalkDir::new(&searchdir).into_iter().filter_map(|e| e.ok()) {
-            //Infile for the FFMPEG command
-            let inpath = file.path();
+        for file in WalkDir::new(&search_dir).into_iter().filter_map(|e| e.ok()) {
 
-            let mut out_path = inpath.to_path_buf();
-            
+            //Infile for the FFMPEG command
+            let in_path = file.path();
+
+            //Converts in_path to a PathBuf so the extentsion can be changes and stores it in out_path
+            let mut out_path = in_path.to_path_buf();
+
+            //changes extension of out_path to the second specified extension
             out_path.set_extension(&extention2);
 
-
-            let ffmpeg = Command::new(program).arg("-i").arg(inpath).arg(out_path).output();
+            //sets up the ffmpeg command to run
+            let ffmpeg = Command::new(program).arg("-i").arg(in_path).arg(out_path).output();
 
             //makes sure what its looking at is a file and turns the filename to a string and checks its extention
             if file.metadata().expect("Can't read file metadata").is_file() && file.file_name().to_string_lossy().ends_with(&extention1){
+                //runs the command and prints its output
                 println!("status: {:?}", ffmpeg)
             }
         }
