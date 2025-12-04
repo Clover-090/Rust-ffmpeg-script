@@ -40,7 +40,7 @@ fn main() {
         newlineremover(&mut extention1);
         newlineremover(&mut extention2);
         
-        //Currently prints the path of all the files that are under the given directory and all its sub directories, skips files that it doesn not have perms for
+        
         for file in WalkDir::new(&search_dir).into_iter().filter_map(|e| e.ok()) {
 
             //Infile for the FFMPEG command
